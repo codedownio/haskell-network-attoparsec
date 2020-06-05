@@ -22,9 +22,9 @@ __WARNING__: In certain situations while using the attoparsec string parser, it
 
 module Network.Attoparsec (ParseC, parseMany, parseOne) where
 
+import           Control.Exception.Enclosed (tryAny)
 import           Control.Monad.Catch
 import           Control.Monad.IO.Class
-import           Control.Exception.Enclosed (tryAny)
 
 import qualified Data.Attoparsec.ByteString as Atto
 import qualified Data.ByteString            as BS
@@ -55,6 +55,7 @@ data ParseMode = Single | Many
 --   For more usage examples, see the test directory.
 parseMany :: ( MonadIO m
              , MonadMask m
+             , MonadFail m
              , Show a)
           => NS.Socket         -- ^ Socket to read data from
           -> ParseC a          -- ^ Initial parser state
@@ -80,6 +81,7 @@ parseMany s p0 pCur = do
 --  > doParse sock = parseOne sock (AttoParsec.parse myParser)
 parseOne :: ( MonadIO m
             , MonadMask m
+            , MonadFail m
             , Show a)
          => NS.Socket -- ^ Socket to read data from
          -> ParseC a  -- ^ Initial parser state
@@ -99,6 +101,7 @@ parseOne s p0 = do
 
 parseBuffer :: ( MonadIO m
                , MonadMask m
+               , MonadFail m
                , Show a)
             => ParseC a          -- ^ Initial parser state
             -> ParseMode         -- ^ Whether to perform greedy or non-greedy parsing
